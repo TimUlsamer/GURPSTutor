@@ -1,7 +1,6 @@
 # app.py
-# Streamlit app: Tomb of the Silver Serpent with a robust, mobile-friendly PDF viewer
-# Works across Firefox/Chrome/Edge/Safari/Opera (desktop + mobile) by rendering with PDF.js (canvas).
-# Assumes "GURPS 4e - Lite.pdf" is in the same folder (you can change the filename in the sidebar).
+# Streamlit app: PDF.js viewer + adventure with a draggable split pane.
+# Put "GURPS 4e - Lite.pdf" in the same folder (or change name in the sidebar).
 
 import base64
 from pathlib import Path
@@ -23,41 +22,75 @@ if not pdf_path.exists():
 
 pdf_b64 = base64.b64encode(pdf_path.read_bytes()).decode("ascii")
 
-html = f"""
+html = """
 <!doctype html>
 <html>
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <style>
-  :root{{--bg:#0e0f12; --panel:#151821; --ink:#e7ecf3; --muted:#b7c3d6; --accent:#79b8ff; --accent2:#a4f9c8; --pill:#1e2430; --pill-border:#2a3142; --link:#9ed0ff;}}
-  html,body{{background:var(--bg); color:var(--ink); margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif; line-height:1.55}}
-  .wrap{{display:grid; grid-template-columns: 46% 54%; gap:12px; height:100vh; box-sizing:border-box; padding:10px}}
-  .viewer{{position:sticky; top:0; height:calc(100vh - 20px); background:#0b0c10; border:1px solid #222839; border-radius:12px; overflow:auto; padding:8px}}
-  .toolbar{{display:flex; gap:8px; align-items:center; flex-wrap:wrap; padding:6px 6px 8px; position:sticky; top:0; background:#0b0c10; z-index:2}}
-  .btn{{appearance:none; border:1px solid #2a3142; background:#1a2030; color:#cfe2ff; padding:.34rem .6rem; border-radius:10px; cursor:pointer}}
-  input[type="number"]{{width:5rem; background:#121620; border:1px solid #2a3142; color:#e6eefc; padding:.3rem .4rem; border-radius:8px}}
-  .right{{overflow:auto; padding-right:6px}}
-  h1{{font-size:1.45rem; margin:.2rem 0 .6rem}}
-  h2{{font-size:1.18rem; margin:1rem 0 .4rem}}
-  h3{{font-size:1.02rem; margin:.9rem 0 .25rem; color:var(--muted)}}
-  p{{margin:.5rem 0}}
-  .panel{{background:var(--panel); border:1px solid #222839; border-radius:14px; padding:12px 14px; margin:10px 0}}
-  .readaloud{{border-left:4px solid var(--accent2); background:#182028; padding:10px 12px; border-radius:10px}}
-  .pill{{display:inline-block; background:var(--pill); border:1px solid var(--pill-border); border-radius:999px; padding:.18rem .55rem; margin:.12rem .2rem; font-size:.86rem; color:var(--muted)}}
-  /* Clickable "links" that won't trigger downloads or navigation */
-  .pdf{{color:var(--link); border-bottom:1px dotted #3b5b7c; cursor:pointer}}
-  .pdf:hover{{text-decoration:underline}}
-  .small{{font-size:.92rem; color:var(--muted)}}
-  .map{{white-space:nowrap; overflow:auto}}
-  .kbd{{font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; background:#212634; border:1px solid #2a3142; padding:.08rem .4rem; border-radius:6px}}
-  canvas{{display:block; margin:0 auto; background:#0b0c10; border:1px solid #222839; border-radius:8px}}
-  .note{{color:#a9bad6; font-size:.9rem}}
+  :root{
+    --bg:#0e0f12; --panel:#151821; --ink:#e7ecf3; --muted:#b7c3d6; --accent:#79b8ff; --accent2:#a4f9c8;
+    --pill:#1e2430; --pill-border:#2a3142; --link:#9ed0ff;
+    --left:46%; --right:54%; /* initial split */
+    --gutter:10px; /* splitter width */
+  }
+  html,body{background:var(--bg); color:var(--ink); margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif; line-height:1.55; height:100%}
+  .wrap{
+    display:grid;
+    grid-template-columns: var(--left) var(--gutter) var(--right);
+    grid-template-rows: 100%;
+    gap:0;
+    height:100vh; box-sizing:border-box; padding:10px;
+  }
+  .viewer{
+    grid-column:1;
+    position:sticky; top:0; height:calc(100vh - 20px);
+    background:#0b0c10; border:1px solid #222839; border-radius:12px; overflow:auto; padding:8px
+  }
+  .right{
+    grid-column:3;
+    overflow:auto; padding-left:12px; padding-right:6px
+  }
+  .gutter{
+    grid-column:2;
+    cursor:col-resize;
+    position:relative;
+    display:flex; align-items:center; justify-content:center;
+    touch-action:none; /* important for mobile dragging */
+  }
+  /* visual of the splitter */
+  .bar{
+    width:4px; height:70%;
+    background:linear-gradient(180deg,#2a3142,#3b4560);
+    border-radius:6px;
+    box-shadow:0 0 0 1px #1d2330, inset 0 0 0 1px #4a5876;
+  }
+  .gutter.active .bar{ background:linear-gradient(180deg,#5b6a8d,#8aa2d1) }
+
+  /* UI cosmetics */
+  h1{font-size:1.45rem; margin:.2rem 0 .6rem}
+  h2{font-size:1.18rem; margin:1rem 0 .4rem}
+  h3{font-size:1.02rem; margin:.9rem 0 .25rem; color:var(--muted)}
+  p{margin:.5rem 0}
+  .panel{background:var(--panel); border:1px solid #222839; border-radius:14px; padding:12px 14px; margin:10px 0}
+  .readaloud{border-left:4px solid var(--accent2); background:#182028; padding:10px 12px; border-radius:10px}
+  .pill{display:inline-block; background:var(--pill); border:1px solid var(--pill-border); border-radius:999px; padding:.18rem .55rem; margin:.12rem .2rem; font-size:.86rem; color:var(--muted)}
+  .pdf{color:var(--link); border-bottom:1px dotted #3b5b7c; cursor:pointer}
+  .pdf:hover{text-decoration:underline}
+  .small{font-size:.92rem; color:var(--muted)}
+  .map{white-space:nowrap; overflow:auto}
+  .kbd{font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; background:#212634; border:1px solid #2a3142; padding:.08rem .4rem; border-radius:6px}
+  .toolbar{display:flex; gap:8px; align-items:center; flex-wrap:wrap; padding:6px 6px 8px; position:sticky; top:0; background:#0b0c10; z-index:2}
+  .btn{appearance:none; border:1px solid #2a3142; background:#1a2030; color:#cfe2ff; padding:.34rem .6rem; border-radius:10px; cursor:pointer}
+  input[type="number"]{width:5rem; background:#121620; border:1px solid #2a3142; color:#e6eefc; padding:.3rem .4rem; border-radius:8px}
+  canvas{display:block; margin:0 auto; background:#0b0c10; border:1px solid #222839; border-radius:8px}
+  .note{color:#a9bad6; font-size:.9rem}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <div class="viewer">
+<div class="wrap" id="splitWrap">
+  <div class="viewer" id="viewer">
     <div class="toolbar">
       <button class="btn" id="prevBtn">◀ Prev</button>
       <button class="btn" id="nextBtn">Next ▶</button>
@@ -69,10 +102,14 @@ html = f"""
       <span class="small">Zoom</span>
       <button class="btn" id="zoomIn">+</button>
       <button class="btn" id="fitWidth">Fit Width</button>
-      <span class="note">File: <span class="kbd">{pdf_path.name}</span></span>
+      <span class="note">File: <span class="kbd">__PDF_NAME__</span></span>
     </div>
     <canvas id="pdfCanvas"></canvas>
     <div id="pdfError" class="note" style="padding:8px 6px;"></div>
+  </div>
+
+  <div class="gutter" id="gutter" role="separator" aria-orientation="vertical" aria-label="Resize panels">
+    <div class="bar"></div>
   </div>
 
   <div class="right">
@@ -173,122 +210,145 @@ html = f"""
 </div>
 
 <script>
-  // Load PDF.js from CDN; render from base64 so we don't need any server routes.
-  (function init() {{
+  // ---------- PDF.js setup (render to canvas) ----------
+  (function initPDF(){
     const errEl = document.getElementById('pdfError');
     const canvas = document.getElementById('pdfCanvas');
     const ctx = canvas.getContext('2d');
     let pdfDoc = null, currentPage = 1, totalPages = 0, scale = 1.2, rendering = false, pendingPage = null;
 
-    function msg(t) {{ errEl.textContent = t; }}
+    function msg(t){ errEl.textContent = t; }
+    function b64ToUint8Array(b64){ const bin = atob(b64); const len = bin.length; const bytes = new Uint8Array(len); for(let i=0;i<len;i++) bytes[i]=bin.charCodeAt(i); return bytes; }
+    function fitWidth(page, desiredWidth){ const vp = page.getViewport({scale:1}); return desiredWidth / vp.width; }
 
-    function b64ToUint8Array(b64) {{
-      const bin = atob(b64);
-      const len = bin.length;
-      const bytes = new Uint8Array(len);
-      for (let i=0;i<len;i++) bytes[i] = bin.charCodeAt(i);
-      return bytes;
-    }}
-
-    function fitWidth(page, desiredWidth) {{
-      const vp = page.getViewport({{scale:1}});
-      return desiredWidth / vp.width;
-    }}
-
-    function renderPage(num, autoFit=false) {{
+    function renderPage(num, autoFit=false){
       rendering = true;
-      pdfDoc.getPage(num).then(page => {{
-        // Compute viewport/scale
+      pdfDoc.getPage(num).then(page=>{
         let useScale = scale;
-        if (autoFit) {{
-          const maxW = canvas.parentElement.clientWidth - 16; // paddings
-          useScale = Math.max(0.5, Math.min(2.4, fitWidth(page, maxW)));
+        if(autoFit){
+          const viewer = document.getElementById('viewer');
+          const maxW = viewer.clientWidth - 22; // padding/border allowance
+          useScale = Math.max(0.5, Math.min(2.8, fitWidth(page, maxW)));
           scale = useScale;
-        }}
-        const viewport = page.getViewport({{ scale: useScale }});
-
-        // handle HiDPI
+        }
+        const viewport = page.getViewport({ scale: useScale });
         const dpr = window.devicePixelRatio || 1;
         canvas.width = Math.floor(viewport.width * dpr);
         canvas.height = Math.floor(viewport.height * dpr);
         canvas.style.width = Math.floor(viewport.width) + 'px';
         canvas.style.height = Math.floor(viewport.height) + 'px';
-
-        const renderContext = {{
+        const renderTask = page.render({
           canvasContext: ctx,
-          viewport: viewport,
-          transform: dpr !== 1 ? [dpr, 0, 0, dpr, 0, 0] : null
-        }};
-
-        const renderTask = page.render(renderContext);
-        renderTask.promise.then(() => {{
+          viewport,
+          transform: dpr !== 1 ? [dpr,0,0,dpr,0,0] : null
+        });
+        renderTask.promise.then(()=>{
           rendering = false;
           document.getElementById('pageInput').value = String(num);
           document.getElementById('pageCount').textContent = '/ ' + totalPages;
-          if (pendingPage !== null) {{
-            const p = pendingPage; pendingPage = null; renderPage(p);
-          }}
-        }}).catch(e => msg('Render error: ' + e));
-      }}).catch(e => msg('Page error: ' + e));
-    }}
+          if(pendingPage!==null){ const p = pendingPage; pendingPage=null; renderPage(p); }
+        }).catch(e=>msg('Render error: '+e));
+      }).catch(e=>msg('Page error: '+e));
+    }
+    function queueRender(num, autoFit=false){ if(rendering){ pendingPage=num; } else { renderPage(num, autoFit); } }
+    function goTo(num, autoFit=false){ if(num<1 || num>totalPages) return; currentPage=num; queueRender(num, autoFit); }
 
-    function queueRender(num, autoFit=false) {{
-      if (rendering) {{ pendingPage = num; }} else {{ renderPage(num, autoFit); }}
-    }}
+    document.getElementById('prevBtn').addEventListener('click', ()=>goTo(Math.max(1,currentPage-1)));
+    document.getElementById('nextBtn').addEventListener('click', ()=>goTo(Math.min(totalPages,currentPage+1)));
+    document.getElementById('zoomIn').addEventListener('click', ()=>{ scale=Math.min(3,scale+0.15); goTo(currentPage); });
+    document.getElementById('zoomOut').addEventListener('click', ()=>{ scale=Math.max(0.4,scale-0.15); goTo(currentPage); });
+    document.getElementById('fitWidth').addEventListener('click', ()=>goTo(currentPage,true));
+    document.getElementById('pageInput').addEventListener('change', e=>{ const v=parseInt(e.target.value,10); if(!isNaN(v)) goTo(v); });
 
-    function goTo(num, autoFit=false) {{
-      if (num < 1 || num > totalPages) return;
-      currentPage = num;
-      queueRender(currentPage, autoFit);
-    }}
+    // adventure links
+    document.querySelectorAll('.pdf[data-page]').forEach(el=>{
+      el.addEventListener('click', ()=>{ const p=parseInt(el.getAttribute('data-page'),10); if(!isNaN(p)) goTo(p,true); });
+      el.setAttribute('title', (el.textContent.trim()||'Open PDF')+' → page '+el.getAttribute('data-page'));
+    });
 
-    // Wire UI
-    document.getElementById('prevBtn').addEventListener('click', () => goTo(Math.max(1, currentPage-1)));
-    document.getElementById('nextBtn').addEventListener('click', () => goTo(Math.min(totalPages, currentPage+1)));
-    document.getElementById('zoomIn').addEventListener('click', () => {{ scale = Math.min(3, scale + 0.15); goTo(currentPage); }});
-    document.getElementById('zoomOut').addEventListener('click', () => {{ scale = Math.max(0.4, scale - 0.15); goTo(currentPage); }});
-    document.getElementById('fitWidth').addEventListener('click', () => goTo(currentPage, true));
-    document.getElementById('pageInput').addEventListener('change', (e) => {{
-      const v = parseInt(e.target.value, 10);
-      if (!isNaN(v)) goTo(v);
-    }});
-
-    // Make all "pdf" spans jump to page
-    document.querySelectorAll('.pdf[data-page]').forEach(el => {{
-      el.addEventListener('click', () => {{
-        const p = parseInt(el.getAttribute('data-page'), 10);
-        if (!isNaN(p)) goTo(p, true);
-      }});
-      el.setAttribute('title', (el.textContent.trim() || 'Open PDF') + ' → page ' + el.getAttribute('data-page'));
-    }});
-
-    // Load PDF.js library
-    function start(pdfjsLib) {{
-      // Set worker (same version)
+    function start(pdfjsLib){
       pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
-      const data = b64ToUint8Array("{pdf_b64}");
-      pdfjsLib.getDocument({{data}}).promise.then(doc => {{
-        pdfDoc = doc;
-        totalPages = doc.numPages;
-        goTo(1, true);
-      }}).catch(e => msg('Failed to load PDF: ' + e));
-    }}
-
-    // Load from CDN robustly
-    const s = document.createElement('script');
-    s.src = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js';
-    s.onload = () => start(window['pdfjsLib']);
-    s.onerror = () => {{
-      msg('Could not load PDF.js from CDN. Check your connection. You can also vendor pdfjs-dist locally and update the script URLs.');
-    }};
+      const data = b64ToUint8Array('__PDF_B64__');
+      pdfjsLib.getDocument({data}).promise.then(doc=>{
+        pdfDoc=doc; totalPages=doc.numPages; goTo(1,true);
+      }).catch(e=>msg('Failed to load PDF: '+e));
+    }
+    const s=document.createElement('script');
+    s.src='https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js';
+    s.onload=()=>start(window['pdfjsLib']);
+    s.onerror=()=>msg('Could not load PDF.js from CDN.');
     document.head.appendChild(s);
-  }})();
+
+    // ---------- Resizable Split Pane ----------
+    const wrap = document.getElementById('splitWrap');
+    const gutter = document.getElementById('gutter');
+
+    let dragging=false, wrapRect=null, minPct=1, maxPct=99, lastPct=null, lastTap=0;
+
+    function setSplit(pct){
+      pct = Math.max(minPct, Math.min(maxPct, pct));
+      wrap.style.setProperty('--left', pct+'%');
+      wrap.style.setProperty('--right', (100 - pct)+'%');
+      lastPct = pct;
+      gutter.setAttribute('aria-valuenow', String(Math.round(pct)));
+    }
+
+    function pointerDown(e){
+      dragging=true;
+      gutter.classList.add('active');
+      wrapRect = wrap.getBoundingClientRect();
+      e.preventDefault();
+    }
+    function pointerMove(e){
+      if(!dragging) return;
+      const clientX = e.clientX ?? (e.touches && e.touches[0].clientX);
+      if(typeof clientX !== 'number') return;
+      const pct = ((clientX - wrapRect.left) / wrapRect.width) * 100;
+      setSplit(pct);
+    }
+    function pointerUp(){
+      if(!dragging) return;
+      dragging=false;
+      gutter.classList.remove('active');
+      // After resizing, auto fit current page to new width for crispness
+      goTo(currentPage, true);
+    }
+
+    // Pointer events (with touch fallback)
+    if(window.PointerEvent){
+      gutter.addEventListener('pointerdown', pointerDown);
+      window.addEventListener('pointermove', pointerMove);
+      window.addEventListener('pointerup', pointerUp);
+      window.addEventListener('pointercancel', pointerUp);
+    }else{
+      gutter.addEventListener('mousedown', pointerDown);
+      window.addEventListener('mousemove', pointerMove);
+      window.addEventListener('mouseup', pointerUp);
+      gutter.addEventListener('touchstart', pointerDown, {passive:false});
+      window.addEventListener('touchmove', pointerMove, {passive:false});
+      window.addEventListener('touchend', pointerUp);
+      window.addEventListener('touchcancel', pointerUp);
+    }
+
+    // Double-click / double-tap to reset split
+    gutter.addEventListener('dblclick', ()=>{ setSplit(46); goTo(currentPage,true); });
+    gutter.addEventListener('touchend', (e)=>{
+      const now=Date.now();
+      if(now - lastTap < 350){ setSplit(46); goTo(currentPage,true); }
+      lastTap = now;
+    });
+
+    // Initialize ARIA state
+    gutter.setAttribute('aria-valuemin', String(minPct));
+    gutter.setAttribute('aria-valuemax', String(maxPct));
+    setSplit(46);
+  })();
 </script>
 </body>
 </html>
 """
 
-# Render the whole app UI as a single HTML component
-st.components.v1.html(html, height=900, scrolling=False)
+html = html.replace("__PDF_B64__", pdf_b64).replace("__PDF_NAME__", pdf_path.name)
 
-st.caption("This viewer uses PDF.js (canvas) so page jumps work on Safari/Opera/Firefox/Chrome (desktop & mobile).")
+st.components.v1.html(html, height=900, scrolling=False)
+st.caption("Drag the vertical bar to resize the panels. Double-click (or double-tap) the bar to reset.")
