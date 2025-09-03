@@ -61,7 +61,7 @@ html = """
   }
   /* visual of the splitter */
   .bar{
-    width:4px; height:70%;
+    width:16px; height:70%;
     background:linear-gradient(180deg,#2a3142,#3b4560);
     border-radius:6px;
     box-shadow:0 0 0 1px #1d2330, inset 0 0 0 1px #4a5876;
@@ -283,7 +283,7 @@ html = """
     const wrap = document.getElementById('splitWrap');
     const gutter = document.getElementById('gutter');
 
-    let dragging=false, wrapRect=null, minPct=1, maxPct=99, lastPct=null, lastTap=0;
+    let dragging=false, wrapRect=null, minPct=0, maxPct=100, lastPct=null, lastTap=0;
 
     function setSplit(pct){
       pct = Math.max(minPct, Math.min(maxPct, pct));
