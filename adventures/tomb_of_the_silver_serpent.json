@@ -1,0 +1,18 @@
+{
+  "title": "Tomb of the Silver Serpent",
+  "pdf": "GURPS 4e - Lite.pdf",
+  "sections": [
+    {
+      "title": "A. Village Edge",
+      "tags": ["Reaction", "Influence"],
+      "readaloud": "Old Maera meets you by a standing stone: \u201cBring back the idol and hush the hill.\u201d",
+      "body": "Roll Reaction or Influence as a Quick Contest."
+    },
+    {
+      "title": "B. Sink-Stairs",
+      "tags": ["Climbing", "Encumbrance", "Falling"],
+      "readaloud": "Collapsed stone stairs spiral into dark.",
+      "body": "Tie rope; roll Climbing; failure leads to falling."
+    }
+  ]
+}
