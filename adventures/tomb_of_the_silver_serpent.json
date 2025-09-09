@@ -1,0 +1,18 @@
+{
+  "name": "The Tomb of the Silver Serpent",
+  "pdf": "GURPS 4e - Lite.pdf",
+  "sections": [
+    {
+      "title": "A. Village Edge",
+      "content": "Old Maera meets you by a standing stone: \"Bring back the idol and hush the hill.\"\n\nRoll Reaction or use an Influence roll as a Quick Contest."
+    },
+    {
+      "title": "B. Sink-Stairs",
+      "content": "Collapsed stone stairs spiral into dark. Tie rope; roll Climbing (start; then each 5 min). Apply Encumbrance. Failure → Falling; Jumping help."
+    },
+    {
+      "title": "C. Whispering Antechamber",
+      "content": "Faint sibilant whispers drift from ahead. Hearing to parse. Then a chill passes—make a Fright Check (+2 if Combat Reflexes)."
+    }
+  ]
+}
