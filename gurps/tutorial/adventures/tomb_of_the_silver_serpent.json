@@ -1,0 +1,337 @@
+{
+    "title": "The Tomb of the Silver Serpent",
+    "sections": [
+        {
+            "id": "A",
+            "title": "Village Edge",
+            "tags": [
+                "Reaction",
+                "Influence"
+            ],
+            "readaloud": "Old Maera meets you by a standing stone: \u201cBring back the idol and hush the hill.\u201d",
+            "body": "<p>Roll Reaction or use an Influence roll as a Quick Contest.</p><p class=\"small\">Optional trail: Hiking \u00b7 Fatigue basics</p>",
+            "keywords": [
+                {
+                    "keyword": "Reaction",
+                    "page": 3
+                },
+                {
+                    "keyword": "Influence roll",
+                    "page": 24
+                },
+                {
+                    "keyword": "Quick Contest",
+                    "page": 3
+                },
+                {
+                    "keyword": "Hiking",
+                    "page": 22
+                },
+                {
+                    "keyword": "Fatigue basics",
+                    "page": 31
+                }
+            ]
+        },
+        {
+            "id": "B",
+            "title": "Sink-Stairs",
+            "tags": [
+                "Climbing",
+                "Encumbrance",
+                "Falling"
+            ],
+            "readaloud": "Collapsed stone stairs spiral into dark.",
+            "body": "<p>Tie rope; roll Climbing (start; then each 5 min). Apply Encumbrance. Failure \u2192 Falling; Jumping help.</p>",
+            "keywords": [
+                {
+                    "keyword": "Climbing",
+                    "page": 22
+                },
+                {
+                    "keyword": "Encumbrance",
+                    "page": 22
+                },
+                {
+                    "keyword": "Falling",
+                    "page": 31
+                },
+                {
+                    "keyword": "Jumping",
+                    "page": 23
+                }
+            ]
+        },
+        {
+            "id": "C",
+            "title": "Whispering Antechamber",
+            "tags": [
+                "Perception",
+                "Fright"
+            ],
+            "readaloud": "Faint sibilant whispers drift from ahead.",
+            "body": "<p>Hearing to parse. Then a chill passes\u2014make a Fright Check (+2 if Combat Reflexes).</p>",
+            "keywords": [
+                {
+                    "keyword": "Hearing",
+                    "page": 24
+                },
+                {
+                    "keyword": "Fright Check",
+                    "page": 24
+                },
+                {
+                    "keyword": "Combat Reflexes",
+                    "page": 9
+                }
+            ]
+        },
+        {
+            "id": "D",
+            "title": "Hall of Echoes",
+            "tags": [
+                "Stealth vs Hearing",
+                "Maneuvers"
+            ],
+            "readaloud": "The ceiling is webbed with bats.",
+            "body": "<p>Use Stealth vs. Hearing as a Quick Contest. If swarmed, consider All-Out Defense.</p>",
+            "keywords": [
+                {
+                    "keyword": "Hearing",
+                    "page": 24
+                },
+                {
+                    "keyword": "Quick Contest",
+                    "page": 3
+                },
+                {
+                    "keyword": "All-Out Defense",
+                    "page": 25
+                }
+            ]
+        },
+        {
+            "id": "E",
+            "title": "Barred Door & Crawl",
+            "tags": [
+                "Lockpicking",
+                "Contests",
+                "Poison"
+            ],
+            "readaloud": "Cold air hisses through iron bars. A wall crack beckons.",
+            "body": "<ul>\n<li><strong>Pick:</strong> Lockpicking; spot with Vision. Fail & prick \u2192 Poison.</li>\n<li><strong>Force:</strong> your ST as a Quick Contest vs Door 13 (crit fail: lose FP).</li>\n<li><strong>Crawl:</strong> Vision + Climbing (Flexibility helps); back out with Ready.</li>\n</ul>",
+            "keywords": [
+                {
+                    "keyword": "Lockpicking",
+                    "page": 14
+                },
+                {
+                    "keyword": "Vision",
+                    "page": 24
+                },
+                {
+                    "keyword": "Poison",
+                    "page": 32
+                },
+                {
+                    "keyword": "Quick Contest",
+                    "page": 3
+                },
+                {
+                    "keyword": "FP",
+                    "page": 31
+                },
+                {
+                    "keyword": "Climbing",
+                    "page": 22
+                },
+                {
+                    "keyword": "Flexibility",
+                    "page": 9
+                },
+                {
+                    "keyword": "Ready",
+                    "page": 25
+                }
+            ]
+        },
+        {
+            "id": "F",
+            "title": "Ember Room",
+            "tags": [
+                "Flame",
+                "Heat",
+                "Fatigue"
+            ],
+            "readaloud": "Four braziers and a serpent relief with four fire-icons.",
+            "body": "<p>Flame hurts: Flame (ignite; put out with Ready). Heat drains FP: Heat, Fatigue.</p>",
+            "keywords": [
+                {
+                    "keyword": "Flame",
+                    "page": 32
+                },
+                {
+                    "keyword": "Ready",
+                    "page": 25
+                },
+                {
+                    "keyword": "Heat",
+                    "page": 32
+                },
+                {
+                    "keyword": "Fatigue",
+                    "page": 31
+                }
+            ]
+        },
+        {
+            "id": "G",
+            "title": "Prisoner",
+            "tags": [
+                "First Aid",
+                "Disease",
+                "Reaction"
+            ],
+            "readaloud": "Tavi, a sickly tomb-robber, pleads for help.",
+            "body": "<p>Reaction or Influence. Spores as Disease. Treat with First Aid.</p>",
+            "keywords": [
+                {
+                    "keyword": "Reaction",
+                    "page": 3
+                },
+                {
+                    "keyword": "Influence",
+                    "page": 24
+                },
+                {
+                    "keyword": "Disease",
+                    "page": 31
+                },
+                {
+                    "keyword": "First Aid",
+                    "page": 30
+                }
+            ]
+        },
+        {
+            "id": "H",
+            "title": "Serpent Shrine",
+            "tags": [
+                "Combat",
+                "Defenses",
+                "Damage & DR",
+                "Poison"
+            ],
+            "readaloud": "Scales rustle around a coiled stone idol\u2026",
+            "body": "<p class=\"small\"><strong>Silver Serpent:</strong> ST 13, DX 12, HT 12; HP 13; Basic Speed 6.00 (Move 6), Dodge 9; DR 2. Bite 1d-1 imp + poison (HT\u22123; 1 tox/min \u00d76). Tail 1d-1 cr. Uses All-Out Attack at times; fears fire.</p><ul>\n<li>Turn Sequence; pick maneuvers.</li>\n<li>Dodge/Parry/Block (Dodge from p.6).</li>\n<li>Apply DR & wounding modifiers.</li>\n<li>Injury thresholds; low FP penalties.</li>\n<li>After: First Aid.</li>\n</ul>",
+            "keywords": [
+                {
+                    "keyword": "poison",
+                    "page": 32
+                },
+                {
+                    "keyword": "All-Out Attack",
+                    "page": 25
+                },
+                {
+                    "keyword": "Turn Sequence",
+                    "page": 25
+                },
+                {
+                    "keyword": "maneuvers",
+                    "page": 25
+                },
+                {
+                    "keyword": "Dodge/Parry/Block",
+                    "page": 28
+                },
+                {
+                    "keyword": "DR & wounding modifiers",
+                    "page": 29
+                },
+                {
+                    "keyword": "Injury thresholds",
+                    "page": 29
+                },
+                {
+                    "keyword": "FP",
+                    "page": 31
+                },
+                {
+                    "keyword": "First Aid",
+                    "page": 30
+                }
+            ]
+        },
+        {
+            "id": "I",
+            "title": "Idol & Collapse",
+            "tags": [
+                "Encumbrance",
+                "Jumping",
+                "Falling"
+            ],
+            "readaloud": "The plinth\u2019s idol (~15 lb) triggers a rumble when lifted.",
+            "body": "<p>Spot seams: Vision. Flee 5 turns. Recalc Encumbrance. Gap (3 yd): Jumping (skill) / DX; distance rules. Fail \u2192 Fall, then Climb.</p>",
+            "keywords": [
+                {
+                    "keyword": "Vision",
+                    "page": 24
+                },
+                {
+                    "keyword": "Encumbrance",
+                    "page": 22
+                },
+                {
+                    "keyword": "Jumping",
+                    "page": 14
+                },
+                {
+                    "keyword": "distance rules",
+                    "page": 23
+                },
+                {
+                    "keyword": "Fall",
+                    "page": 31
+                },
+                {
+                    "keyword": "Climb",
+                    "page": 22
+                }
+            ]
+        },
+        {
+            "id": "J",
+            "title": "Exit & Return",
+            "tags": [
+                "Hiking",
+                "Poison/Disease Cycles",
+                "Reaction"
+            ],
+            "readaloud": "",
+            "body": "<p>Hiking for the march. Finish poison cycles. Tomorrow\u2019s disease cycles & remedies. Back in town: Reaction or Influence.</p>",
+            "keywords": [
+                {
+                    "keyword": "Hiking",
+                    "page": 22
+                },
+                {
+                    "keyword": "poison cycles",
+                    "page": 32
+                },
+                {
+                    "keyword": "disease cycles",
+                    "page": 31
+                },
+                {
+                    "keyword": "Reaction",
+                    "page": 3
+                },
+                {
+                    "keyword": "Influence",
+                    "page": 24
+                }
+            ]
+        }
+    ]
+}
