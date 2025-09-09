@@ -3,11 +3,76 @@
 # Put "GURPS 4e - Lite.pdf" in the same folder (or change name in the sidebar).
 
 import base64
+import json
 from pathlib import Path
 import streamlit as st
 
 st.set_page_config(page_title="The Tomb of the Silver Serpent — GURPS Lite Viewer", layout="wide")
 
+# ----------- Menu & Simple Adventure Editor -----------
+st.sidebar.title("Menü")
+mode = st.sidebar.radio("Ansicht", ["Abenteuer ansehen", "Abenteuer erstellen"], index=0)
+
+if mode == "Abenteuer erstellen":
+    st.header("Abenteuer-Editor")
+    st.caption("Erstelle oder verwalte deine eigenen Abenteuer-Kacheln.")
+
+    if "tiles" not in st.session_state:
+        st.session_state["tiles"] = []
+
+    st.session_state["adv_title"] = st.text_input(
+        "Titel des Abenteuers",
+        value=st.session_state.get("adv_title", ""),
+    )
+
+    uploaded = st.file_uploader("Abenteuer aus JSON laden", type="json")
+    if uploaded is not None:
+        data = json.load(uploaded)
+        st.session_state["adv_title"] = data.get("title", "")
+        st.session_state["tiles"] = data.get("tiles", [])
+
+    with st.form("tile_form"):
+        t_title = st.text_input("Abschnittstitel")
+        t_tags = st.text_input("Tags (Komma-getrennt)")
+        t_readaloud = st.text_area("Vorlesetext")
+        t_body = st.text_area("Beschreibung")
+        add = st.form_submit_button("Kachel hinzufügen")
+
+    if add and t_title:
+        st.session_state["tiles"].append(
+            {
+                "title": t_title,
+                "tags": [s.strip() for s in t_tags.split(",") if s.strip()],
+                "readaloud": t_readaloud,
+                "body": t_body,
+            }
+        )
+
+    for i, tile in enumerate(st.session_state["tiles"]):
+        st.subheader(f"{i + 1}. {tile['title']}")
+        if tile["tags"]:
+            st.markdown("Tags: " + ", ".join(tile["tags"]))
+        if tile["readaloud"]:
+            st.markdown("> " + tile["readaloud"].replace("\n", "\n> "))
+        st.write(tile["body"])
+        if st.button(f"Kachel löschen {i + 1}", key=f"del_{i}"):
+            st.session_state["tiles"].pop(i)
+            st.experimental_rerun()
+
+    adventure_data = {
+        "title": st.session_state.get("adv_title", ""),
+        "tiles": st.session_state.get("tiles", []),
+    }
+    st.download_button(
+        "Abenteuer speichern",
+        data=json.dumps(adventure_data, ensure_ascii=False, indent=2),
+        file_name="abenteuer.json",
+        mime="application/json",
+    )
+
+    st.stop()
+
+# ----------- Adventure Viewer -----------
 st.sidebar.title("Settings")
 pdf_filename = st.sidebar.text_input("PDF file name (same folder):", value="GURPS 4e - Lite.pdf")
 
